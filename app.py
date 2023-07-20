@@ -21,3 +21,10 @@ def display_survey_start():
         "survey_start.html",
         title=title,
         instructions=instructions)
+
+@app.post('/begin')
+def display_survey():
+    question = survey.questions[0].prompt
+    choices = survey.questions[0].choices
+
+    return render_template("question.html", question=question, choices=choices)
