@@ -24,13 +24,18 @@ def display_survey_start():
 
 
 @app.post('/begin')
-def redirect_to_first_question():
-     return redirect('/questions/0')
+def reset_and_start_survey():
+    """Clears current list of responses and directs user to first
+    survey question
+    """
 
+    responses.clear()
+    return redirect('/questions/0')
 
 
 @app.get('/questions/<int:id>')
 def show_next_question(id):
+    """Renders survey question at #id"""
     question = survey.questions[id].prompt
     choices = survey.questions[id].choices
 
@@ -42,7 +47,28 @@ def show_next_question(id):
 
 
 @app.post('/answer/<int:id>')
-def redirect_to_next_question(id):
-     id += 1
-     responses.append(request.args["answer"])
-     return redirect(f'/questions/{id}')
+def save_answer_and_advance(id):
+    """Save user answer to responses list. Direct user to the next question
+    or completion page if survey is complete"""
+
+    responses.append(request.form["answer"])
+
+    id += 1
+    if id >= len(survey.questions):
+        return redirect('/completion')
+
+    return redirect(f'/questions/{id}')
+
+
+@app.get('/completion')
+def display_thank_you():
+    """Displays thank you page and survey overview"""
+
+    questions = survey.questions
+    answers = responses
+
+    return render_template(
+        'completion.html',
+        questions = questions,
+        answers = answers
+        )
