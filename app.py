@@ -22,9 +22,27 @@ def display_survey_start():
         title=title,
         instructions=instructions)
 
-@app.post('/begin')
-def display_survey():
-    question = survey.questions[0].prompt
-    choices = survey.questions[0].choices
 
-    return render_template("question.html", question=question, choices=choices)
+@app.post('/begin')
+def redirect_to_first_question():
+     return redirect('/questions/0')
+
+
+
+@app.get('/questions/<int:id>')
+def show_next_question(id):
+    question = survey.questions[id].prompt
+    choices = survey.questions[id].choices
+
+    return render_template(
+        "question.html",
+        question=question,
+        choices=choices,
+        id=id)
+
+
+@app.post('/answer/<int:id>')
+def redirect_to_next_question(id):
+     id += 1
+     responses.append(request.args["answer"])
+     return redirect(f'/questions/{id}')
