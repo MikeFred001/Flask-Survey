@@ -6,7 +6,7 @@
 
   <ul>
     {% for answer in answers %}
-      <li><b>{{ questions[loop.index0].prompt }}:</b> {{ answer }}</li>
+      <li><b>{{ questions[loop.index0] }}:</b> {{ answer }}</li>
     {% endfor %}
   </ul>
 
