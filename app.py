@@ -8,7 +8,7 @@ app.config['DEBUG_TB_INTERCEPT_REDIRECTS'] = False
 
 debug = DebugToolbarExtension(app)
 
-responses = []
+
 
 @app.get('/')
 def display_survey_start():
@@ -29,13 +29,20 @@ def reset_and_start_survey():
     survey question
     """
 
-    responses.clear()
+    session['responses'] = []
     return redirect('/questions/0')
 
 
 @app.get('/questions/<int:id>')
 def show_next_question(id):
     """Renders survey question at #id"""
+
+    responses = session['responses']
+
+    if not ( id == len(responses)):
+        print(f'\n\n***Redirecting*** Responses: {len(responses)} ID:{id}\n')
+        return redirect(f'/questions/{len(responses)}')
+
     question = survey.questions[id].prompt
     choices = survey.questions[id].choices
 
@@ -51,7 +58,10 @@ def save_answer_and_advance(id):
     """Save user answer to responses list. Direct user to the next question
     or completion page if survey is complete"""
 
+    responses = session['responses']
     responses.append(request.form["answer"])
+    session['responses'] = responses
+
 
     id += 1
     if id >= len(survey.questions):
@@ -65,7 +75,7 @@ def display_thank_you():
     """Displays thank you page and survey overview"""
 
     questions = survey.questions
-    answers = responses
+    answers = session['responses']
 
     return render_template(
         'completion.html',
