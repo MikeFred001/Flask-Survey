@@ -9,7 +9,6 @@ app.config['DEBUG_TB_INTERCEPT_REDIRECTS'] = False
 debug = DebugToolbarExtension(app)
 
 
-
 @app.get('/')
 def display_survey_start():
     """Displays survey start page when user reaches root of site"""
@@ -35,8 +34,12 @@ def reset_and_start_survey():
 
 @app.get('/questions/<int:id>')
 def show_next_question(id):
-    """Renders survey question at #id"""
+    """Renders survey question at #id, uses override function to redirect
+    user if URL is manually changed to an illegal value"""
 
+    # Handles redirection for illegal user URL inputs
+    # Redirects user to correct question regardless of manual URL input
+    # Redirects user to thank_you screen if all questions are answered
     override = override_manual_navigation(id)
     if override:
         return override
