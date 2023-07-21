@@ -37,11 +37,9 @@ def reset_and_start_survey():
 def show_next_question(id):
     """Renders survey question at #id"""
 
-    responses = session['responses']
-
-    if not ( id == len(responses)):
-        print(f'\n\n***Redirecting*** Responses: {len(responses)} ID:{id}\n')
-        return redirect(f'/questions/{len(responses)}')
+    override = override_manual_navigation(id)
+    if override:
+        return override
 
     question = survey.questions[id].prompt
     choices = survey.questions[id].choices
@@ -82,3 +80,23 @@ def display_thank_you():
         questions = questions,
         answers = answers
         )
+
+
+def override_manual_navigation(id):
+    """Takes a question id
+    Returns a redirect object if user tries to navigate to invalid question
+    Otherwise returns None
+    """
+
+    responses = session['responses']
+
+    # Redirect user to thank_you page if survey has already been completed
+    if len(responses) >= len(survey.questions):
+        flash("Survey has already been completed")
+        return redirect('/completion')
+
+    # Redirect user to correct question to avoid manually skipping questions
+    if not ( id == len(responses)):
+        print(f'\n\n***Redirecting*** Responses: {len(responses)} ID:{id}\n')
+        flash("Nice try, redirected to the correct survey question")
+        return redirect(f'/questions/{len(responses)}')

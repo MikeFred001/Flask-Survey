@@ -1,6 +1,10 @@
 {% extends 'base.html' %}
 {% block content %}
 
+  {% for msg in get_flashed_messages() %}
+    <h3>{{ msg }}</h3>
+  {% endfor %}
+
   <h1>{{ question }}</h1>
 
   <form action="/answer/{{id}}" method="POST">
@@ -12,7 +16,7 @@
             type="radio"
             name="answer"
             value="{{choice}}">
-        {{choice}}
+        {{ choice }}
       </p>
       {% endfor %}
 
